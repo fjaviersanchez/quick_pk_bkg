@@ -45,11 +45,11 @@ if o.show_plot:
     plt.show()
 
 pix_scale=0.2/60*rfactor #pixel scale in arcmin
-kx = 1./pix_scale*np.arange(-F2.shape[0]/2,F2.shape[0]/2)/(2.*np.pi)*1./F2.shape[0]
-ky = 1./pix_scale*np.arange(-F2.shape[1]/2,F2.shape[1]/2)/(2.*np.pi)*1./F2.shape[1]
+kx = 1./pix_scale*np.arange(-F2.shape[0]/2,F2.shape[0]/2)*1./F2.shape[0]
+ky = 1./pix_scale*np.arange(-F2.shape[1]/2,F2.shape[1]/2)*1./F2.shape[1]
 kxx, kyy = np.meshgrid(kx,ky)
 rad = np.sqrt(kxx**2+kyy**2)
-bins = 1./pix_scale*np.arange(0,F2.shape[0]/2)/(2.*np.pi)*1./F2.shape[0]
+bins = 1./pix_scale*np.arange(0,F2.shape[0]/2)*1./F2.shape[0]
 bin_space = bins[1]-bins[0]
 ps1d = np.zeros(len(bins))
 for i,b in enumerate(bins):
