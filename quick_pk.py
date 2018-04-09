@@ -6,15 +6,22 @@ import matplotlib.pyplot as plt
 import astropy.table
 from scipy import fftpack
 from optparse import OptionParser
+import glob
+import sys
 parser = OptionParser()
-parser.add_option('--run-number',dest='rn',type=int,help='Run number to analyze')
 parser.add_option('--show-plots',dest='show_plot',action='store_true',help='Show results')
+parser.add_option('--raft-number',dest='raft_no',type=str,default='22',help='Raft number: 00, 01, 02, etc formatted as string')
+parser.add_option('--input-path',dest='input_path',type=str,help='Input directory')
+parser.add_option('--output-path',dest='output_path',type=str,help='Output path')
 (o, args) = parser.parse_args()
-run_no = o.rn
-test_number='%06d' %run_no # Number of the run to analyze
+
 rfactor=16 # Rebinning factor
 # I get the path to the e-images
-data_path = ['/global/projecta/projectdirs/lsst/production/DC2/DC2-phoSim-test_WFD-r/output/%s/lsst_e_417009_f2_R22_S%s_E000.fits.gz' % (test_number,sensor) for sensor in ['00','01','02','10','11','12','20','21','22']]
+data_path = glob.glob(os.path.join(o.input_path,'lsst_e_*_f2_R%s_S*_E000.fits.gz') % (o.raft_no))
+try:
+    assert(len(data_path)==9)
+except:
+    sys.exit('The raft selected is not fully simulated yet')
 # I read the e-images (using fitsio to improve speed)
 data = [fitsio.read(dp) for dp in data_path]
 images = [skimage.transform.resize(d,(d.shape[0]/rfactor,d.shape[1]/rfactor),preserve_range=True) for d in data]
@@ -61,4 +68,4 @@ if o.show_plot:
     plt.ylabel('$P(k)$')
     plt.show()
 tab_pk = astropy.table.Table([bins,ps1d],names=('k','Pk'))
-tab_pk.write('Pk_%d.fits.gz' %run_no,overwrite=True)
+tab_pk.write(o.output_path,overwrite=True)
